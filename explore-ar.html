@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ar-EG" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استكشف باك شير - رؤيتنا</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+    <link rel="icon" href="favicon.png" type="image/x-icon">
+    <style>
+        :root {
+            --bg-dark: #0A0A0A;
+            --bg-medium: #111111;
+            --border-color: #2a2a2a;
+            --text-primary: #ededed;
+            --text-secondary: #999999;
+            --accent-color: #8b5cf6;
+            --accent-color-light: #a78bfa;
+        }
+        ::selection { background: var(--accent-color); color: var(--text-primary); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans Arabic', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+        #particle-canvas { position: fixed; top: 0; right: 0; width: 100%; height: 100%; z-index: -1; }
+        .header {
+            position: fixed; top: 0; right: 0; width: 100%;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.5rem 5%; z-index: 100;
+            background: linear-gradient(to bottom, rgba(10, 10, 10, 0.8), transparent);
+        }
+        .header-logo {
+            font-family: 'Noto Sans Arabic', sans-serif; font-weight: 700; font-size: 1.5rem;
+            color: var(--text-primary); text-decoration: none; user-select: none;
+        }
+        .header-controls { display: flex; align-items: center; gap: 2rem; }
+        .header-nav { display: flex; gap: 2rem; }
+        .header-nav a {
+            color: var(--text-secondary); text-decoration: none;
+            font-weight: 500; transition: color 0.3s ease;
+        }
+        .header-nav a:hover, .header-nav a.active { color: var(--text-primary); }
+        .lang-switcher {
+            color: var(--text-primary); text-decoration: none;
+            font-weight: 500; font-size: 1rem;
+            padding: 0.5rem 1rem; border: 2px solid var(--border-color);
+            border-radius: 8px; transition: all 0.3s ease;
+            line-height: 1; white-space: nowrap;
+            font-family: 'Poppins', sans-serif;
+        }
+        .lang-switcher:hover { background-color: var(--accent-color); border-color: var(--accent-color); }
+        main { display: flex; flex-direction: column; align-items: center; padding: 8rem 2rem 4rem 2rem; }
+        .content-wrapper { max-width: 800px; width: 100%; }
+        .content-wrapper section { margin-bottom: 4rem; }
+        .content-wrapper h1, .content-wrapper h2, .content-wrapper h3 {
+            font-weight: 700; letter-spacing: -0.02em;
+            line-height: 1.5; text-align: right;
+        }
+        .content-wrapper h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            margin-bottom: 1rem; color: var(--text-primary);
+        }
+        .content-wrapper h2 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem); margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);
+        }
+        .content-wrapper h3 {
+            font-size: clamp(1.4rem, 3vw, 1.8rem); margin-bottom: 1rem;
+            color: var(--accent-color-light);
+        }
+        .content-wrapper h4 {
+            font-size: 1.1rem; font-weight: 500; color: var(--text-secondary);
+            margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; text-align: right;
+        }
+        .content-wrapper p {
+            font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary);
+            margin-bottom: 1.5rem; text-align: right;
+        }
+        .content-wrapper strong, .content-wrapper em {
+            color: var(--accent-color-light); font-weight: 500; font-style: normal;
+        }
+        .content-wrapper ul { list-style: none; padding-right: 0; margin-bottom: 1.5rem; }
+        .content-wrapper ul li {
+            font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary);
+            padding-right: 1.5rem; position: relative;
+            margin-bottom: 0.75rem; text-align: right;
+        }
+        .content-wrapper ul li::before {
+            content: '•'; color: var(--accent-color); font-weight: bold;
+            position: absolute; right: 0; top: 0;
+        }
+        .highlight-box {
+            background: var(--bg-medium); border-right: 3px solid var(--accent-color);
+            padding: 1.5rem; margin: 2rem 0;
+            border-radius: 8px 0 0 8px;
+        }
+        .highlight-box p { margin-bottom: 0; font-style: italic; color: var(--text-primary); }
+        .business-model-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem; margin-top: 2rem; text-align: right;
+        }
+        .model-item {
+            background: var(--bg-medium); padding: 1.5rem;
+            border-radius: 12px; border: 1px solid var(--border-color);
+        }
+        .model-item .percentage { font-size: 2.5rem; font-weight: 700; color: var(--accent-color); }
+        .model-item .description { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+        .cta-button {
+            display: inline-block; background: var(--accent-color); color: var(--text-primary);
+            padding: 1rem 3rem; font-size: 1.1rem; font-weight: 500;
+            text-decoration: none; border-radius: 50px; transition: all 0.3s ease;
+        }
+        .cta-button:hover { background: var(--accent-color-light); transform: scale(1.05); }
+        .footer { padding: 2rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem; border-top: 1px solid var(--border-color); width: 100%; }
+    </style>
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+    <header class="header">
+        <a href="./ar.html" class="header-logo">باك.</a>
+        <div class="header-controls">
+            <nav class="header-nav">
+                <a href="./explore-ar.html" class="active">استكشف</a>
+                <a href="./ar.html#form">انضم للقائمة</a>
+            </nav>
+            <a href="explore-en.html" class="lang-switcher" aria-label="التبديل إلى الإنجليزية">English</a>
+        </div>
+    </header>
+    <main>
+        <div class="content-wrapper">
+            <section>
+                <h1>باك شير: مستقبل التعليم في مصر</h1>
+                <p>تخيل مصر حيث يحصل كل طالب على التوجيه الدقيق الذي يحتاجه للنجاح. حيث تُقاس المسافة بين الحلم والإنجاز بالجهد، وليس بالفرص. حيث تصبح المعرفة الجماعية لأفضل طلابنا منصة انطلاق للجيل القادم.</p>
+                <div class="highlight-box">
+                    <p>باك هو <strong>النظام التعليمي المتكامل</strong> الذي كنا نفتقده.</p>
+                </div>
+            </section>
+            <section>
+                <h2>ماذا نبني: المركز الشامل</h2>
+                <p>يتم تصميم باك لتصبح <strong>المنصة النهائية</strong> لطلاب الثانوية العامة ومدارس ستيم في جميع أنحاء مصر. اعتبرها مركز قيادتك التعليمي الشامل:</p>
+                <ul>
+                    <li><strong>لوحة تحكم واحدة</strong> لجميع احتياجاتك التعليمية.</li>
+                    <li><strong>منصة واحدة</strong> تصلك بالطلاب الذين ساروا على نفس طريقك بالضبط.</li>
+                    <li><strong>نظام واحد</strong> ينمو معك من صعوبات المواد الدراسية إلى أحلام الجامعة.</li>
+                </ul>
+                <p>وهذه مجرد البداية. مع نمو مجتمعنا، سنتوسع لخدمة المزيد من الأنظمة التعليمية بناءً على ملاحظاتكم وطلباتكم المباشرة.</p>
+            </section>
+            <section>
+                <h2>للطلاب: تعلم من أصحاب الخبرة</h2>
+                <h3>لماذا يغير هذا كل شيء</h3>
+                <p>أنت لا تتعلم المواد فقط - بل تتعلم <em>أنماط النجاح</em>. معلمونا ليسوا مدرسين بعيدين؛ إنهم طلاب تفوقوا مؤخراً في نفس الامتحانات التي تستعد لها. يتذكرون الضغط، الحيل، الاختصارات، والعقلية اللازمة للتفوق.</p>
+                <h4>لوحة تحكمك التعليمية الشاملة:</h4>
+                <ul>
+                    <li>وصول إلى أفضل المتفوقين المعتمدين في كل مادة</li>
+                    <li>مسارات تعليمية منظمة ومصممة خصيصًا للمناهج المصرية</li>
+                    <li>تتبع للتقدم الدراسي بشكل منطقي ومفيد</li>
+                    <li>ميزات مجتمعية للتواصل مع زملائك</li>
+                    <li>تصميم متوافق مع الجوال يناسب أسلوب حياتك</li>
+                </ul>
+                <div class="highlight-box">
+                    <p><strong>المعادلة السحرية:</strong> نجاح مثبت + خبرة حديثة. معلمونا يفهمون امتحانات اليوم لأنهم كانوا يجلسون مكانك قبل أشهر قليلة.</p>
+                </div>
+            </section>
+            <section>
+                <h2>للمعلمين المستقبليين: منصتك للتألق</h2>
+                <h3>ابنِ إرثك بينما تكسب</h3>
+                <p>نحن نؤمن بتقدير وقتك وموهبتك. لهذا السبب نقدم نموذجًا هجينًا يوفر الأمان والإمكانات غير المحدودة.</p>
+                <h4>حد أدنى مضمون + مكافآت أداء</h4>
+                <ul>
+                    <li><strong>أمان أساسي: ١٥٠٠ جنيه شهريًا.</strong> مبلغ رمزي مضمون لالتزامك، يتطلب نشر درسين عاليي الجودة على الأقل أسبوعيًا.</li>
+                    <li><strong>أرباح حسب الأداء: ٢٠٪ من إجمالي الإيرادات.</strong> نوزع ٢٠٪ من إجمالي إيراداتنا الشهرية بين المعلمين بناءً على التقييمات والمشاهدات وتفاعل الطلاب. كلما كان أداؤك أفضل، زادت أرباحك.</li>
+                </ul>
+                <h3>مجموعة أدوات التدريس الخاصة بك</h3>
+                <p>بمجرد التحقق منك، ستحصل على <strong>مجموعة نجاح المعلم</strong> الشاملة لمساعدتك في إنشاء محتوى احترافي وعالي التأثير، تغطي كل شيء من الإنتاج وإتقان المنصة إلى المدفوعات والنمو.</p>
+                <h4>جودة تبني الثقة</h4>
+                <p>تضمن عملية التحقق المكونة من ٣ خطوات (تقديم المحتوى، ضمان الجودة، وموافقة المنصة) أن أفضل محتوى فقط هو الذي يتم نشره. نحافظ على معايير عالية لأن سمعتك وسمعتنا تعتمد على ذلك.</p>
+            </section>
+            <section>
+                <h2>نموذج عملنا: الشفافية أولاً</h2>
+                <h3>أين يذهب كل جنيه</h3>
+                <div class="business-model-grid">
+                    <div class="model-item">
+                        <div class="percentage">٢٠٪</div>
+                        <div class="description">← صندوق أداء المعلمين. يوزع شهريًا بناءً على مقاييس واضحة.</div>
+                    </div>
+                    <div class="model-item">
+                        <div class="percentage">١٥٪</div>
+                        <div class="description">← تطوير وابتكار المنصة. للميزات الجديدة وتطوير التطبيق.</div>
+                    </div>
+                    <div class="model-item">
+                        <div class="percentage">٦٥٪</div>
+                        <div class="description">← العمليات المستدامة. رواتب الفريق، التسويق، والدعم.</div>
+                    </div>
+                </div>
+                <p style="margin-top: 2rem;"><strong>لا نسعى للربح:</strong> يتم إعادة استثمار كل فائض في تحسينات المنصة أو يعود إلى مجتمع المعلمين لدينا.</p>
+            </section>
+            <section style="text-align: center;">
+                <h2>انضم إلى ثورتنا التعليمية</h2>
+                <p>باك ليست منصتنا، بل هي <em>منصة مجتمعنا</em>. مع نمونا، ستشكل ملاحظاتكم تطورنا بشكل مباشر. هكذا نصمم قوائم مهامنا.</p>
+                <p>انضم إلى قائمة الانتظار وسنرسل لك رسالة على واتساب عند إطلاق باك. ستحصل على رابط إحالة لدعوة أصدقائك وكسب المكافآت.</p>
+                <a href="ar.html#form" class="cta-button">انضم لقائمة الانتظار</a>
+            </section>
+        </div>
+    </main>
+    <footer class="footer">
+        <p>صُنع بـ ❤️ بواسطة <b>باك</b> &bull; بشباب مصر، لشباب مصر.</p>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Particle Background
+            const canvas = document.getElementById('particle-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let particles = [];
+                const resize = () => {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    particles = [];
+                    const count = window.innerWidth > 768 ? 80 : 40;
+                    for (let i = 0; i < count; i++) {
+                        particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 2 + 1, dx: (Math.random() - 0.5) * 0.5, dy: (Math.random() - 0.5) * 0.5 });
+                    }
+                };
+                window.addEventListener('resize', resize);
+                resize();
+                const animate = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    particles.forEach(p => {
+                        p.x += p.dx; p.y += p.dy;
+                        if (p.x > canvas.width + 5 || p.x < -5) p.dx = -p.dx;
+                        if (p.y > canvas.height + 5 || p.y < -5) p.dy = -p.dy;
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'; ctx.fill();
+                    });
+                    for (let a = 0; a < particles.length; a++) {
+                        for (let b = a; b < particles.length; b++) {
+                            const dist = Math.hypot(particles[a].x - particles[b].x, particles[a].y - particles[b].y);
+                            if (dist < 120) {
+                                ctx.strokeStyle = `rgba(173, 161, 211, ${1 - dist / 120})`;
+                                ctx.lineWidth = 0.5; ctx.beginPath();
+                                ctx.moveTo(particles[a].x, particles[a].y);
+                                ctx.lineTo(particles[b].x, particles[b].y); ctx.stroke();
+                            }
+                        }
+                    }
+                    requestAnimationFrame(animate);
+                };
+                animate();
+            }
+        });
+    </script>
+</body>
+</html>

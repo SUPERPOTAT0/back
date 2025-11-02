@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore BackShare - Our Vision</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@500&display=swap" rel="stylesheet">
+    <link rel="icon" href="favicon.png" type="image/x-icon">
+    <style>
+        :root {
+            --bg-dark: #0A0A0A;
+            --bg-medium: #111111;
+            --border-color: #2a2a2a;
+            --text-primary: #ededed;
+            --text-secondary: #999999;
+            --accent-color: #8b5cf6;
+            --accent-color-light: #a78bfa;
+        }
+        ::selection { background: var(--accent-color); color: var(--text-primary); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+        #particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.5rem 5%; z-index: 100;
+            background: linear-gradient(to bottom, rgba(10, 10, 10, 0.8), transparent);
+        }
+        .header-logo {
+            font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.5rem;
+            color: var(--text-primary); text-decoration: none; user-select: none;
+        }
+        .header-controls { display: flex; align-items: center; gap: 2rem; }
+        .header-nav { display: flex; gap: 2rem; }
+        .header-nav a {
+            color: var(--text-secondary); text-decoration: none;
+            font-weight: 500; transition: color 0.3s ease;
+        }
+        .header-nav a:hover, .header-nav a.active { color: var(--text-primary); }
+        .lang-switcher {
+            color: var(--text-primary); text-decoration: none;
+            font-weight: 500; font-size: 1rem;
+            padding: 0.5rem 1rem; border: 2px solid var(--border-color);
+            border-radius: 8px; transition: all 0.3s ease;
+            line-height: 1; white-space: nowrap;
+        }
+        .lang-switcher.ar-lang { font-family: 'Noto Sans Arabic', sans-serif; }
+        .lang-switcher:hover { background-color: var(--accent-color); border-color: var(--accent-color); }
+        main { display: flex; flex-direction: column; align-items: center; padding: 8rem 2rem 4rem 2rem; }
+        .content-wrapper { max-width: 800px; width: 100%; }
+        .content-wrapper section { margin-bottom: 4rem; }
+        .content-wrapper h1, .content-wrapper h2, .content-wrapper h3 {
+            font-weight: 700; letter-spacing: -0.02em;
+            line-height: 1.3; text-align: left;
+        }
+        .content-wrapper h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            margin-bottom: 1rem; color: var(--text-primary);
+        }
+        .content-wrapper h2 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem); margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);
+        }
+        .content-wrapper h3 {
+            font-size: clamp(1.4rem, 3vw, 1.8rem); margin-bottom: 1rem;
+            color: var(--accent-color-light);
+        }
+        .content-wrapper h4 {
+            font-size: 1.1rem; font-weight: 500; color: var(--text-secondary);
+            margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .content-wrapper p {
+            font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary);
+            margin-bottom: 1.5rem; text-align: left;
+        }
+        .content-wrapper strong, .content-wrapper em {
+            color: var(--accent-color-light); font-weight: 500; font-style: normal;
+        }
+        .content-wrapper ul { list-style: none; padding-left: 0; margin-bottom: 1.5rem; }
+        .content-wrapper ul li {
+            font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary);
+            padding-left: 1.5rem; position: relative;
+            margin-bottom: 0.75rem; text-align: left;
+        }
+        .content-wrapper ul li::before {
+            content: '•'; color: var(--accent-color); font-weight: bold;
+            position: absolute; left: 0; top: 0;
+        }
+        .highlight-box {
+            background: var(--bg-medium); border-left: 3px solid var(--accent-color);
+            padding: 1.5rem; margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .highlight-box p { margin-bottom: 0; font-style: italic; color: var(--text-primary); }
+        .business-model-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem; margin-top: 2rem; text-align: left;
+        }
+        .model-item {
+            background: var(--bg-medium); padding: 1.5rem;
+            border-radius: 12px; border: 1px solid var(--border-color);
+        }
+        .model-item .percentage { font-size: 2.5rem; font-weight: 700; color: var(--accent-color); }
+        .model-item .description { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+        .cta-button {
+            display: inline-block; background: var(--accent-color); color: var(--text-primary);
+            padding: 1rem 3rem; font-size: 1.1rem; font-weight: 500;
+            text-decoration: none; border-radius: 50px; transition: all 0.3s ease;
+        }
+        .cta-button:hover { background: var(--accent-color-light); transform: scale(1.05); }
+        .footer { padding: 2rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem; border-top: 1px solid var(--border-color); width: 100%; }
+    </style>
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+    <header class="header">
+        <a href="./en.html" class="header-logo">back.</a>
+        <div class="header-controls">
+            <nav class="header-nav">
+                <a href="./explore-en.html" class="active">Explore</a>
+                <a href="./en.html#form">Join Waitlist</a>
+            </nav>
+            <a href="explore-ar.html" class="lang-switcher ar-lang" aria-label="Switch to Arabic">عربي</a>
+        </div>
+    </header>
+    <main>
+        <div class="content-wrapper">
+            <section>
+                <h1>BackShare: The Future of Learning in Egypt</h1>
+                <p>Imagine a Egypt where every student has access to the exact guidance they need to succeed. Where the distance between dreaming and achieving is measured in effort, not opportunity. Where the collective knowledge of our best students becomes the launching pad for the next generation.</p>
+                <div class="highlight-box">
+                    <p>Back is <strong>the educational ecosystem</strong> we've been missing.</p>
+                </div>
+            </section>
+            <section>
+                <h2>What We're Building: The Go-To Hub</h2>
+                <p>Back is being crafted to become <strong>the definitive platform</strong> for Thanawya Amma and STEM school students across Egypt. Think of it as your all-in-one educational command center:</p>
+                <ul>
+                    <li><strong>One Dashboard</strong> for all your learning needs.</li>
+                    <li><strong>One Platform</strong> connecting you with students who've walked your exact path.</li>
+                    <li><strong>One System</strong> that grows with you from subject struggles to university dreams.</li>
+                </ul>
+                <p>And this is just the beginning. As our community grows, we'll expand to serve more educational systems based on your direct feedback and requests.</p>
+            </section>
+            <section>
+                <h2>For Students: Learn from Experience</h2>
+                <h3>Why This Changes Everything</h3>
+                <p>You're not just learning subjects - you're learning <em>success patterns</em>. Our tutors aren't distant teachers; they're students who recently aced the exact exams you're preparing for. They remember the pressure, the tricks, the shortcuts, and the mindset needed to excel.</p>
+                <h4>Your All-in-One Learning Dashboard:</h4>
+                <ul>
+                    <li>Access to verified top-performers in every subject</li>
+                    <li>Structured learning paths tailored to the Egyptian curriculum</li>
+                    <li>Progress tracking that actually makes sense</li>
+                    <li>Community features to connect with peers</li>
+                    <li>Mobile-first design that works with your lifestyle</li>
+                </ul>
+                <div class="highlight-box">
+                    <p><strong>The Magic Formula:</strong> Proven Success + Recent Experience. Our tutors understand today's exams because they were sitting where you are just months ago.</p>
+                </div>
+            </section>
+            <section>
+                <h2>For Future Tutors: Your Platform to Shine</h2>
+                <h3>Build Your Legacy While You Earn</h3>
+                <p>We believe in valuing your time and talent. That's why we offer a hybrid model that provides both security and unlimited potential.</p>
+                <h4>Guaranteed Minimum + Performance Rewards</h4>
+                <ul>
+                    <li><strong>Base Security: 1,500 EGP Monthly.</strong> A symbolic guaranteed amount for your commitment, requiring at least 2 quality lessons published per week.</li>
+                    <li><strong>Performance-Based Earnings: 20% of All Revenue.</strong> We distribute 20% of our TOTAL monthly revenue among tutors based on ratings, views, and student engagement. The better you perform, the more you earn.</li>
+                </ul>
+                <h3>Your Teaching Toolkit</h3>
+                <p>Once verified, you receive our comprehensive <strong>Tutor Success Kit</strong> to help you create professional, high-impact content, covering everything from production and platform mastery to payments and growth.</p>
+                <h4>Quality That Builds Trust</h4>
+                <p>Our 3-Step Verification Process (Content Submission, Quality Assurance, and Platform Approval) ensures that only the best content makes it live. We maintain high standards because your reputation—and ours—depends on it.</p>
+            </section>
+            <section>
+                <h2>Our Business Model: Transparency First</h2>
+                <h3>Where Every Pound Goes</h3>
+                <div class="business-model-grid">
+                    <div class="model-item">
+                        <div class="percentage">20%</div>
+                        <div class="description">→ Tutor Performance Fund. Distributed monthly based on clear metrics.</div>
+                    </div>
+                    <div class="model-item">
+                        <div class="percentage">15%</div>
+                        <div class="description">→ Platform Development & Innovation. For new features and app development.</div>
+                    </div>
+                    <div class="model-item">
+                        <div class="percentage">65%</div>
+                        <div class="description">→ Sustainable Operations. Team salaries, marketing, and support.</div>
+                    </div>
+                </div>
+                <p style="margin-top: 2rem;"><strong>Zero Profit Motive:</strong> Every surplus gets reinvested into platform improvements or goes back to our tutor community.</p>
+            </section>
+            <section style="text-align: center;">
+                <h2>Join Our Educational Revolution</h2>
+                <p>Back isn't our platform—it's <em>our community's platform</em>. As we grow, your feedback will directly shape our development. This is how or to-do lists are designed.</p>
+                <p>Join our waitlist and we will WhatsApp you when we launch Back. You will get a referral link then so you can invite your friends and earn.</p>
+                <a href="en.html#form" class="cta-button">Join the Waitlist</a>
+            </section>
+        </div>
+    </main>
+    <footer class="footer">
+        <p>Made with ❤️ by <b>back</b> &bull; By Egypt's Youth, For Egypt's Youth.</p>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Particle Background
+            const canvas = document.getElementById('particle-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let particles = [];
+                const resize = () => {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    particles = [];
+                    const count = window.innerWidth > 768 ? 80 : 40;
+                    for (let i = 0; i < count; i++) {
+                        particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 2 + 1, dx: (Math.random() - 0.5) * 0.5, dy: (Math.random() - 0.5) * 0.5 });
+                    }
+                };
+                window.addEventListener('resize', resize);
+                resize();
+                const animate = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    particles.forEach(p => {
+                        p.x += p.dx; p.y += p.dy;
+                        if (p.x > canvas.width + 5 || p.x < -5) p.dx = -p.dx;
+                        if (p.y > canvas.height + 5 || p.y < -5) p.dy = -p.dy;
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'; ctx.fill();
+                    });
+                    for (let a = 0; a < particles.length; a++) {
+                        for (let b = a; b < particles.length; b++) {
+                            const dist = Math.hypot(particles[a].x - particles[b].x, particles[a].y - particles[b].y);
+                            if (dist < 120) {
+                                ctx.strokeStyle = `rgba(173, 161, 211, ${1 - dist / 120})`;
+                                ctx.lineWidth = 0.5; ctx.beginPath();
+                                ctx.moveTo(particles[a].x, particles[a].y);
+                                ctx.lineTo(particles[b].x, particles[b].y); ctx.stroke();
+                            }
+                        }
+                    }
+                    requestAnimationFrame(animate);
+                };
+                animate();
+            }
+        });
+    </script>
+</body>
+</html>
