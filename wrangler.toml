@@ -1,8 +1,0 @@
-# wrangler.toml
-
-# ... (other configuration like name, account_id, etc.)
-
-[site]
-# The path to the directory with your static assets.
-# Set to '.' (dot) to use the repository root.
-bucket = "."
